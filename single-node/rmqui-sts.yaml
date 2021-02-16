@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rmqui
+  labels:
+    app: rmqui
+
+spec:
+  serviceName: rmqui
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rmqui
+  template:
+    metadata:
+      labels:
+        app: rmqui
+    spec:
+      containers:
+        - name: rmqui
+          image: registry.cn-hangzhou.aliyuncs.com/sre_pub/rocketmq-console-ng
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 350m
+              memory: 1024Mi
+            requests:
+              cpu: 300m
+              memory: 768Mi
+          env:
+            - name: TZ
+              value: Asia/Shanghai
+            - name: JAVA_OPTS
+              value: -Drocketmq.namesrv.addr=rocketmq:9876 -Dcom.rocketmq.sendMessageWithVIPChannel=false -Duser.home=/root  -Xms512m -Xmx512m
+          ports:
+            - containerPort: 8080
+#          volumeMounts:
+#            - name: vol-logs
+#              mountPath: /root/logs
+#      volumes:
+#        - name: vol-logs
+#          hostPath:
+#            path: /opt/logs-ui
+#            type: Directory
